@@ -112,12 +112,12 @@
                                     <!-- Fila única para la Categoría ocupando todo el ancho de la tabla -->
                                     <tr style="background-color: #dadada !important;">
                                         <t t-if="not o.show_prices">
-                                            <th colspan="2" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
+                                            <th colspan="3" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
                                                 Categoría: <span t-out="category['name']"/>
                                             </th>
                                         </t>
                                         <t t-else="">
-                                            <th colspan="4" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
+                                            <th colspan="5" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
                                                 Categoría: <span t-out="category['name']"/>
                                             </th>
                                         </t>
@@ -126,11 +126,13 @@
                                     <tr>
                                         <!-- Anchos dinámicos optimizados sin la columna de categoría -->
                                         <t t-if="not o.show_prices">
-                                            <th style="width: 80%; text-align: left !important;">Producto</th>
+                                            <th style="width: 65%; text-align: left !important;">Producto</th>
+                                            <th style="width: 15%; text-align: center !important;">U.M.</th>
                                             <th class="qty-header" style="width: 20%;">Cantidades pedidas</th>
                                         </t>
                                         <t t-else="">
-                                            <th style="width: 65%; text-align: left !important;">Producto</th>
+                                            <th style="width: 50%; text-align: left !important;">Producto</th>
+                                            <th style="width: 15%; text-align: center !important;">U.M.</th>
                                             <th class="qty-header" style="width: 10%;">Cant.</th>
                                             <th class="price-header" style="width: 12%;">P. Unitario</th>
                                             <th class="subtotal-header" style="width: 13%;">Subtotal</th>
@@ -143,6 +145,11 @@
                                             <!-- Columna de Producto -->
                                             <td class="product-cell">
                                                 <span t-out="product['name']"/>
+                                            </td>
+                                            
+                                            <!-- Columna de Unidad de Medida -->
+                                            <td style="text-align: center !important;">
+                                                <span t-out="product['uom']"/>
                                             </td>
                                             
                                             <!-- Columna de Cantidad centrada y formateada como entero si es exacta -->
