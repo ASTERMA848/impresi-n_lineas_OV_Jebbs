@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Vista Formulario del Wizard -->
+    <record id="view_sale_consolidated_report_wizard_form" model="ir.ui.view">
+        <field name="name">sale.consolidated.report.wizard.form</field>
+        <field name="model">sale.consolidated.report.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Imprimir líneas de la orden">
+                <sheet>
+                    <div class="oe_title">
+                        <h2>Imprimir líneas de la orden</h2>
+                    </div>
+                    <group>
+                        <group string="Opciones de Consolidación">
+                            <field name="qty_source" widget="radio"/>
+                            <field name="show_prices" widget="boolean_toggle"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Órdenes de Venta Seleccionadas" name="orders_page">
+                            <field name="order_ids" mode="list">
+                                <list create="false" delete="true">
+                                    <field name="name" string="Referencia"/>
+                                    <field name="partner_id" string="Cliente"/>
+                                    <field name="date_order" string="Fecha"/>
+                                    <field name="amount_total" string="Total" sum="Suma Total"/>
+                                    <field name="state" string="Estado" widget="badge" 
+                                           decoration-info="state == 'draft'" 
+                                           decoration-success="state == 'sale'"/>
+                                </list>
+                            </field>
+                            <p class="text-muted mt-2">
+                                * Nota: Puedes quitar o agregar órdenes manualmente de esta lista antes de generar el reporte.
+                            </p>
+                        </page>
+                    </notebook>
+                </sheet>
+                <footer>
+                    <button name="action_print_report" string="Imprimir líneas de la orden" type="object" class="btn-primary" icon="fa-print"/>
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <!-- Desvincular explícitamente la acción de ventana vieja para que deje de aparecer el wizard en el menú Acción -->
+    <record id="action_sale_consolidated_report_wizard" model="ir.actions.act_window">
+        <field name="name">Imprimir líneas de la orden (Wizard)</field>
+        <field name="res_model">sale.consolidated.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" eval="False"/>
+    </record>
+
+    <!-- Acción de Servidor que Vincula el Wizard al Menú de Acción de sale.order de forma silenciosa -->
+    <record id="action_sale_consolidated_report_server" model="ir.actions.server">
+        <field name="name">Imprimir líneas de la orden</field>
+        <field name="model_id" ref="sale.model_sale_order"/>
+        <field name="binding_model_id" ref="sale.model_sale_order"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+            if records:
+                wizard = env['sale.consolidated.report.wizard'].create({
+                    'order_ids': [(6, 0, records.ids)],
+                    'qty_source': 'ordered',
+                    'show_prices': False
+                })
+                action = wizard.action_print_report()
+        </field>
+    </record>
+</odoo>

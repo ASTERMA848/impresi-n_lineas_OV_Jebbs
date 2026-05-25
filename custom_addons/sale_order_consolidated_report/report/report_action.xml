@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Definición del Formato de Papel Personalizado con Márgenes Pequeños (10mm) -->
+    <record id="paperformat_sale_consolidated" model="report.paperformat">
+        <field name="name">Papel Consolidado de Ventas (Márgenes Estrechos)</field>
+        <field name="default" eval="False" />
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">10</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False" />
+        <field name="header_spacing">0</field>
+        <field name="dpi">96</field>
+    </record>
+
+    <!-- Definición de la Acción de Reporte PDF vinculada al Formato de Papel -->
+    <record id="action_report_sale_consolidated" model="ir.actions.report">
+        <field name="name">Reporte de pedidos de sucursales</field>
+        <field name="model">sale.consolidated.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">sale_order_consolidated_report.report_consolidated</field>
+        <field name="report_file">sale_order_consolidated_report.report_consolidated</field>
+        <field name="binding_model_id" eval="False"/>
+        <field name="paperformat_id" ref="sale_order_consolidated_report.paperformat_sale_consolidated"/>
+    </record>
+</odoo>

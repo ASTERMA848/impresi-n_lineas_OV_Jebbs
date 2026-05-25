@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_consolidated">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-family: 'Segoe UI', Calibri, Arial, sans-serif; font-size: 15px; color: #000; line-height: 1.5; width: 100%; margin: 0; padding: 0;">
+                        
+                        <!-- Estilos CSS e Importación de Tipografía Legible -->
+                        <style>
+                            /* Forzar tipografía en todo el reporte */
+                            .page, .page * {
+                                font-family: 'Segoe UI', Calibri, Arial, sans-serif !important;
+                            }
+
+                            /* Cabecera del Reporte */
+                            .report-title-container {
+                                border-bottom: 2px solid #000 !important;
+                                padding-bottom: 8px !important;
+                                margin-bottom: 20px !important;
+                            }
+                            
+                            .report-title {
+                                margin: 0 !important;
+                                font-size: 24px !important;
+                                font-weight: 700 !important;
+                                color: #000 !important;
+                            }
+
+                            .report-metadata {
+                                font-size: 14px !important;
+                                margin-top: 6px !important;
+                                color: #333 !important;
+                                border-top: 1px solid #eee !important;
+                                padding-top: 6px !important;
+                            }
+
+                            /* Tabla Estilo Foto con Rejilla Fuerte y Bordes Negros */
+                            .product-table {
+                                width: 100% !important;
+                                border-collapse: collapse !important;
+                                margin-bottom: 25px !important;
+                                border: 1.5px solid #000 !important;
+                            }
+
+                            .product-table th, .product-table td {
+                                border: 1.5px solid #000 !important;
+                                padding: 5px 12px !important;
+                                color: #000 !important;
+                                font-size: 15px !important;
+                                vertical-align: middle !important;
+                            }
+
+                            .product-table th {
+                                background-color: #ebebeb !important;
+                                font-weight: 700 !important;
+                            }
+
+                            .product-table td.product-cell {
+                                text-align: left !important;
+                                font-weight: 400 !important;
+                            }
+
+                            .product-table td.qty-cell {
+                                text-align: center !important;
+                                font-weight: 700 !important;
+                                font-size: 17px !important;
+                            }
+
+                            .product-table td.price-cell, .product-table td.subtotal-cell {
+                                text-align: right !important;
+                                font-weight: 400 !important;
+                            }
+
+                            .product-table th.qty-header {
+                                text-align: center !important;
+                            }
+
+                            .product-table th.price-header, .product-table th.subtotal-header {
+                                text-align: right !important;
+                            }
+                        </style>
+
+                        <!-- Cabecera Simple -->
+                        <div class="report-title-container">
+                            <table style="width: 100%; border: none !important; border-collapse: collapse !important;">
+                                <tr style="border: none !important;">
+                                    <td style="text-align: left; padding: 0; vertical-align: bottom; border: none !important;">
+                                        <h2 class="report-title">Reporte de pedidos de sucursales</h2>
+                                    </td>
+                                    <td style="text-align: right; padding: 0; vertical-align: bottom; font-size: 14px; color: #444; border: none !important;">
+                                        <strong>Fecha:</strong> <span t-out="datetime.date.today().strftime('%d/%m/%Y')"/>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="report-metadata">
+                                <strong>Órdenes:</strong> <span t-out="o.get_order_names()"/>
+                            </div>
+                        </div>
+
+                        <!-- Datos Consolidados -->
+                        <t t-set="categories_data" t-value="o.get_consolidated_lines()"/>
+                        
+                        <t t-if="not categories_data">
+                            <p style="text-align: center; margin-top: 30px; font-style: italic; color: #555;">No se encontraron líneas de productos a consolidar.</p>
+                        </t>
+
+                        <t t-foreach="categories_data" t-as="category">
+                            <!-- Tabla de Productos Estilizada exactamente como la foto -->
+                            <table class="product-table">
+                                <thead>
+                                    <!-- Fila única para la Categoría ocupando todo el ancho de la tabla -->
+                                    <tr style="background-color: #dadada !important;">
+                                        <t t-if="not o.show_prices">
+                                            <th colspan="2" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
+                                                Categoría: <span t-out="category['name']"/>
+                                            </th>
+                                        </t>
+                                        <t t-else="">
+                                            <th colspan="4" style="text-align: left !important; font-weight: 700 !important; font-size: 17px !important; border: 1.5px solid #000 !important; color: #000 !important; padding: 5px 12px !important;">
+                                                Categoría: <span t-out="category['name']"/>
+                                            </th>
+                                        </t>
+                                    </tr>
+                                    <!-- Fila de Cabeceras de Columnas -->
+                                    <tr>
+                                        <!-- Anchos dinámicos optimizados sin la columna de categoría -->
+                                        <t t-if="not o.show_prices">
+                                            <th style="width: 80%; text-align: left !important;">Producto</th>
+                                            <th class="qty-header" style="width: 20%;">Cantidades pedidas</th>
+                                        </t>
+                                        <t t-else="">
+                                            <th style="width: 65%; text-align: left !important;">Producto</th>
+                                            <th class="qty-header" style="width: 10%;">Cant.</th>
+                                            <th class="price-header" style="width: 12%;">P. Unitario</th>
+                                            <th class="subtotal-header" style="width: 13%;">Subtotal</th>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="category['products']" t-as="product">
+                                        <tr>
+                                            <!-- Columna de Producto -->
+                                            <td class="product-cell">
+                                                <span t-out="product['name']"/>
+                                            </td>
+                                            
+                                            <!-- Columna de Cantidad centrada y formateada como entero si es exacta -->
+                                            <td class="qty-cell">
+                                                <span t-out="int(product['qty']) if product['qty'] % 1 == 0 else product['qty']"/>
+                                            </td>
+                                            
+                                            <!-- Columnas de Precios si corresponde -->
+                                            <t t-if="o.show_prices">
+                                                <td class="price-cell">
+                                                    $ <span t-out="'%.2f' % product['price_unit']"/>
+                                                </td>
+                                                <td class="subtotal-cell">
+                                                    $ <span t-out="'%.2f' % product['subtotal']"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
+                                </tbody>
+                            </table>
+                        </t>
+
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
